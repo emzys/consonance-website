@@ -7,6 +7,7 @@ st.markdown(
     <style>
     /* Sticky Navbar */
     nav {
+        margin-top: 60px; /* TODO: delete when stupid streamlit header is not in the way anymore */
         position: fixed;
         top: 0;
         left: 0;
@@ -69,7 +70,7 @@ st.markdown(
 
     /* Ensure content doesn't hide behind navbar and footer */
     .main {
-        # margin-top: 70px; /* Space for the navbar */
+        margin-top: 70px; /* Space for the navbar */
         margin-bottom: 50px; /* Space for the footer */
         
     }
