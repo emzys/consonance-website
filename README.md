@@ -6,3 +6,5 @@ pyenv local consonance-web
 
 # Install requirements
 pip install -r requirements.txt
+
+# check out Makefile commands
