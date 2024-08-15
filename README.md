@@ -8,3 +8,6 @@ pyenv local consonance-web
 pip install -r requirements.txt
 
 # check out Makefile commands
+
+# To run server use this command:
+make streamlit
