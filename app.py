@@ -1,16 +1,92 @@
 import streamlit as st
 from datetime import datetime
 
-# Function to refresh the page
-def refresh_page():
-    st.experimental_rerun()
+# Custom CSS
+st.markdown(
+    """
+    <style>
+    /* Sticky Navbar */
+    nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #f8f9fa;
+        padding: 10px 48px;
+        z-index: 1000; /* Ensure it stays on top */
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    nav form {
+        display: flex;
+        align-items: center;
+    }
+
+    nav button {
+        padding: 8px 16px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    nav button:hover {
+        border-color: rgb(255, 75, 75);
+        color: rgb(255, 75, 75);
+    }
+
+    /* Sticky Footer */
+    footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #f8f9fa;
+        padding: 10px;
+        text-align: center;
+        z-index: 1000; /* Ensure it stays on top */
+    }
+    
+    button {
+        transition: border-color 0.3s ease, color 0.3s ease;
+    }
+    
+    .btn-refresh {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 400;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.5rem;
+        min-height: 2.5rem;
+        margin: 0px;
+        line-height: 1.6;
+        color: inherit;
+        width: auto;
+        user-select: none;
+        background-color: rgb(255, 255, 255);
+        border: 1px solid rgba(49, 51, 63, 0.2);
+    }
+
+    /* Ensure content doesn't hide behind navbar and footer */
+    .main {
+        # margin-top: 70px; /* Space for the navbar */
+        margin-bottom: 50px; /* Space for the footer */
+        
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Navbar with a refresh button
 def navbar():
     st.markdown(
         """
-        <nav style="background-color: #f8f9fa; padding: 10px; text-align: right;">
-            <button onclick="window.location.reload();" style="padding: 8px 16px; font-size: 16px; cursor: pointer;">Refresh</button>
+        <nav>
+            <h4>Consonance</h4>
+            <form action="/" method="get">
+                <button class="btn-refresh" type="submit">Refresh</button>
+            </form>
         </nav>
         """, 
         unsafe_allow_html=True
@@ -18,7 +94,7 @@ def navbar():
 
 # Header with app title
 def header():
-    st.title("Consonance")
+    st.title("Convert music sheet to MIDI:")
 
 # Body with a form and file display
 def body():
@@ -31,8 +107,7 @@ def body():
         submit_button = st.form_submit_button(label="Submit")
     
     if submit_button:
-        # Here you would send the form data to your API and get a response with the MIDI file
-        # For demonstration purposes, let's simulate an API response
+        # Simulate API response with a MIDI file
         midi_file = "path_to_your_midi_file.mid"  # Replace with the actual API response
 
         st.markdown("### MIDI File Output")
