@@ -85,23 +85,24 @@ if __name__ == "__main__":
     #     unsafe_allow_html=True
     # )
     
-    # Hide the Streamlit viewer badge
-    st.markdown(
-        """
-        <script type="text/javascript">
-        const hideBadge = () => {
-            const badge = document.querySelector('.viewerBadge_container__r5tak');
-            console.log("YELLOW badge",badge)
-            if (badge) {
-                badge.style.display = 'none';
-            }
-        };
+    # # Hide the Streamlit viewer badge
+    # st.markdown(
+    #     """
+    #     <script type="text/javascript">
+    #     console.log("SIEMA!")
+    #     const hideBadge = () => {
+    #         const badge = document.querySelector('.viewerBadge_container__r5tak');
+    #         console.log("YELLOW badge",badge)
+    #         if (badge) {
+    #             badge.style.display = 'none';
+    #         }
+    #     };
 
-        const observer = new MutationObserver(hideBadge);
-        observer.observe(document.body, { childList: true, subtree: true });
+    #     const observer = new MutationObserver(hideBadge);
+    #     observer.observe(document.body, { childList: true, subtree: true });
 
-        hideBadge();  // Initial check in case the badge is already present
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+    #     hideBadge();  // Initial check in case the badge is already present
+    #     </script>
+    #     """,
+    #     unsafe_allow_html=True
+    # )
