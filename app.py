@@ -1,83 +1,11 @@
 import streamlit as st
 from datetime import datetime
 
-# Custom CSS
-st.markdown(
-    """
-    <style>
-    /* Sticky Navbar */
-    nav {
-        margin-top: 60px; /* TODO: delete when stupid streamlit header is not in the way anymore */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        background-color: #f8f9fa;
-        padding: 10px 48px;
-        z-index: 1000; /* Ensure it stays on top */
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    nav form {
-        display: flex;
-        align-items: center;
-    }
+# Imports
+with open('style.css') as f:
+    css = f.read()
 
-    nav button {
-        padding: 8px 16px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-    
-    nav button:hover {
-        border-color: rgb(255, 75, 75);
-        color: rgb(255, 75, 75);
-    }
-
-    /* Sticky Footer */
-    footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #f8f9fa;
-        padding: 10px;
-        text-align: center;
-        z-index: 1000; /* Ensure it stays on top */
-    }
-    
-    button {
-        transition: border-color 0.3s ease, color 0.3s ease;
-    }
-    
-    .btn-refresh {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 400;
-        padding: 0.25rem 0.75rem;
-        border-radius: 0.5rem;
-        min-height: 2.5rem;
-        margin: 0px;
-        line-height: 1.6;
-        color: inherit;
-        width: auto;
-        user-select: none;
-        background-color: rgb(255, 255, 255);
-        border: 1px solid rgba(49, 51, 63, 0.2);
-    }
-
-    /* Ensure content doesn't hide behind navbar and footer */
-    .main {
-        margin-top: 70px; /* Space for the navbar */
-        margin-bottom: 50px; /* Space for the footer */
-        
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
 # Navbar with a refresh button
 def navbar():
@@ -125,8 +53,8 @@ def footer():
     current_year = datetime.now().year
     st.markdown(
         f"""
-        <footer style="background-color: #f8f9fa; padding: 10px; text-align: center;">
-            © {current_year} ♥ by the Dream Team. All rights reserved.
+        <footer>
+            {current_year} © Consonance Inc. All rights reserved.
         </footer>
         """, 
         unsafe_allow_html=True
