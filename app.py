@@ -70,16 +70,36 @@ def main():
 if __name__ == "__main__":
     main()
 
+    # # Hide the Streamlit viewer badge
+    # st.markdown(
+    #     """
+    #     <script>
+    #     document.addEventListener('DOMContentLoaded', function() {
+    #         const badge = document.querySelector('.viewerBadge_container__r5tak');
+    #         if (badge) {
+    #             badge.style.display = 'none';
+    #         }
+    #     });
+    #     </script>
+    #     """,
+    #     unsafe_allow_html=True
+    # )
+    
     # Hide the Streamlit viewer badge
     st.markdown(
         """
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        <script type="text/javascript">
+        const hideBadge = () => {
             const badge = document.querySelector('.viewerBadge_container__r5tak');
             if (badge) {
                 badge.style.display = 'none';
             }
-        });
+        };
+
+        const observer = new MutationObserver(hideBadge);
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        hideBadge();  // Initial check in case the badge is already present
         </script>
         """,
         unsafe_allow_html=True
