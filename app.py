@@ -24,13 +24,14 @@ def navbar():
 
 # Header with app title
 def header():
-    st.title("Convert music sheet to MIDI:")
+    st.title("Music sheet converter:")
 
 # Body with a form and file display
 def body():
     midi_file = None
 
     with st.form(key="my_form"):
+        format = st.selectbox("Select a file format", ["MIDI", "WAV", "mp3"], help="Choose a file format")
         image = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"], help="Choose an image file")
         option = st.selectbox("Select a key", ["C", "D", "E"], help="Choose a key")
         value = st.slider("Choose a tempo", 0, 200, 120, help="Select a tempo between 0 and 200")
@@ -39,7 +40,7 @@ def body():
     if submit_button and image is not None:
         # Send the file and other data to the FastAPI backend
         files = {'image': image.getvalue()}
-        data = {'key': option, 'tempo': value}
+        data = {'format': format, 'key': option, 'tempo': value}
         response = requests.post("http://localhost:8000/generate", files=files, data=data) # TODO: replace placeholder with  proper api url
         
         if response.status_code == 200:
