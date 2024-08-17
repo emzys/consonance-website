@@ -69,8 +69,13 @@ footer {
     width: 100%;
     background-color: #f8f9fa;
     padding: 10px;
-    text-align: center;
+    /* text-align: center; */
     z-index: 1000;
+    padding-left: 24px;
+}
+
+h1 {
+    padding-top: 0;
 }
 
 /* Button Transition */
@@ -93,4 +98,10 @@ button {
     user-select: none;
     background-color: rgb(255, 255, 255);
     border: 1px solid rgba(49, 51, 63, 0.2);
+}
+
+@media only screen and (max-width: 768px) {
+    .st-emotion-cache-13ln4jf {
+        padding-top: 4rem;
+    }
 }
