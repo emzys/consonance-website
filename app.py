@@ -91,6 +91,7 @@ if __name__ == "__main__":
         <script type="text/javascript">
         const hideBadge = () => {
             const badge = document.querySelector('.viewerBadge_container__r5tak');
+            console.log("YELLOW badge",badge)
             if (badge) {
                 badge.style.display = 'none';
             }
