@@ -1,5 +1,6 @@
 /* Soundwave background */
-header, .viewerBadge_container__r5tak, .viewerBadge_link__qRIco {
+header, .viewerBadge_container__r5tak, .viewerBadge_link__qRIco, .viewerBadge_text__fzr3E {
+    opacity: 0 !important;
     display: none !important;
 }
 
