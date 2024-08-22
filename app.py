@@ -1,12 +1,18 @@
+import io
 import requests
 import streamlit as st
 from datetime import datetime
+# from pydub import AudioSegment 
+from midi2audio import FluidSynth  # Required for MIDI to WAV conversion
+import tempfile
 
 # Imports
 with open('style.css') as f:
     css = f.read()
 
 st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+
+apiUrl = "http://127.0.0.1:8000/test?media_type=midi"
 
 # Navbar with a refresh button
 def navbar():
@@ -28,10 +34,10 @@ def header():
 
 # Body with a form and file display
 def body():
-    midi_file = None
+    music_file = None
 
     with st.form(key="my_form"):
-        format = st.selectbox("Select a file format", ["MIDI", "WAV", "mp3"], help="Choose a file format")
+        format = st.selectbox("Select a file format", ["midi", "wav", "mp3"], help="Choose a file format")
         image = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"], help="Choose an image file")
         option = st.selectbox("Select a key", ["C", "D", "E"], help="Choose a key")
         value = st.slider("Choose a tempo", 0, 200, 120, help="Select a tempo between 0 and 200")
@@ -41,20 +47,49 @@ def body():
         # Send the file and other data to the FastAPI backend
         files = {'image': image.getvalue()}
         data = {'format': format, 'key': option, 'tempo': value}
-        response = requests.post("http://localhost:8000/generate", files=files, data=data) # TODO: replace placeholder with  proper api url
+        response1 = requests.post("http://localhost:8000/generate", files=files, data=data) # TODO: replace placeholder with  proper api url
+        response = requests.get(apiUrl) # TODO: replace placeholder with  proper api url
+        
+        # print(f"Response1 status: {response1.status_code}")
+        # print(response1)
+        # print(f"Response1 content: {response1.content}")
+        # print("\n")
+        # print(f"Response status: {response.status_code}")
+        # print(response)
+        # print(f"Response content: {response.content}")
+
         
         if response.status_code == 200:
-            midi_file = response.json().get('midi')
-            st.markdown("### MIDI File Output")
-            st.audio(midi_file, format="audio/midi", start_time=0)
+            # music_file = response.json().get(format)
+            music_file = response.content
+            
+            if format == "midi":
+                # Convert MIDI to WAV for playback using midi2audio
+                with tempfile.NamedTemporaryFile(suffix=".mid") as midi_tempfile:
+                    midi_tempfile.write(music_file)
+                    midi_tempfile.flush()
+
+                    fs = FluidSynth()
+                    with tempfile.NamedTemporaryFile(suffix=".wav") as wav_tempfile:
+                        fs.midi_to_audio(midi_tempfile.name, wav_tempfile.name)
+                        
+                        # Play the WAV file
+                        st.markdown("### File Output")
+                        st.audio(wav_tempfile.read(), format="audio/wav", start_time=0)
+
+            else:
+                st.markdown("### File Output")
+                st.audio(music_file, format=f"audio/{format}", start_time=0)
+
+            
             st.download_button(
-                label="Download MIDI File",
-                data=midi_file,  # Assuming midi_file is the binary content of the file
-                file_name="your_midi_file.mid",
-                mime="audio/midi"
+                label=f"Download {format.upper()} File",
+                data=music_file,
+                file_name=f"your_music_file.{ 'mid' if format == 'midi' else format }",
+                mime=f"audio/{format}"
             )
         else:
-            st.error("Failed to generate MIDI file.")
+            st.error(f"Failed to generate {format.upper()} file.")
 
 # Footer with dynamic year
 def footer():
