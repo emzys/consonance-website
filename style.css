@@ -100,8 +100,62 @@ button {
     border: 1px solid rgba(49, 51, 63, 0.2);
 }
 
+/* .stButton > button {
+    float: right;
+} */
+
+button[kind="primaryFormSubmit"] {
+    margin: 4px 0px;
+    opacity: .85;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-download.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: 40px;
+    min-height: 2.5rem;
+    padding: 4px 12px;
+    margin: 0px;
+    background-color: rgb(255, 255, 255);
+    color: rgb(38, 39, 48);
+    font-weight: 400;
+    position: relative;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(49, 51, 63, 0.2);
+    border-image: initial;
+    transition: border-color 0.3s ease, color 0.3s ease;
+}
+.btn-download.btn-secondary:hover {
+    border-color: rgb(246, 51, 102);
+    color: rgb(246, 51, 102);
+}
+.btn-download.btn-secondary:active {
+    box-shadow: none;
+    background-color: rgb(246, 51, 102);
+    color: white;
+}
+
+.header-download {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 24px;
+}
+
 @media only screen and (max-width: 768px) {
     .st-emotion-cache-13ln4jf {
         padding-top: 4rem;
     }
 }
+
+/* nav button:hover {
+    border-width: 3px;
+    border-color: rgb(255, 75, 75, .3);
+    background-color: rgb(255, 75, 75, .8);
+    color: rgb(255, 255, 255);
+} */

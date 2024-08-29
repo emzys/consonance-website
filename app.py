@@ -1,3 +1,4 @@
+import base64
 import requests
 import streamlit as st
 from datetime import datetime
@@ -32,6 +33,23 @@ def navbar():
 # Header with app title
 def header():
     st.title("Music sheet converter:")
+    
+@st.cache_data
+def fetch_files(files, data):
+    # return requests.post("http://localhost:8000/test_generate", files=files, data=data) # Local
+    return requests.post("https://consonance-9106695144.asia-northeast1.run.app/test_generate", files=files, data=data) # Production
+
+def create_download_link(file):
+    # Encode the file content to base64
+    b64 = base64.b64encode(file[2]).decode()  # Encode and decode to a string
+    
+    # Prepare the HTML link with the correct data URI format
+    label = f"Download {file[0].upper()} File"
+    file_name = file[1].split('/')[-1]
+    mime = f"audio/{file[0]}"
+    href = f'data:{mime};base64,{b64}'
+
+    return f'<a href="{href}" download="{file_name}" class="btn-download btn-secondary" kind="secondary">{label}</a>'
 
 # Body with a form and file display
 def body():
@@ -44,7 +62,7 @@ def body():
         images = st.file_uploader("Upload images", type=["jpg", "png", "jpeg"], accept_multiple_files=True, help="Choose image files")
         # option = st.selectbox("Select a key", ["C", "D", "E"], help="Choose a key")
         # value = st.slider("Choose a tempo", 0, 200, 120, help="Select a tempo between 0 and 200")
-        submit_button = st.form_submit_button(label="Submit")
+        submit_button = st.form_submit_button(label="CONVERT", type="primary")
         
         # # If we watend to submit btn aligned right 
         # button_container = st.container()
@@ -52,13 +70,15 @@ def body():
         #     submit_button = st.form_submit_button(label="Submit")
     
     if submit_button and images is not None:
+        usf_file = None # User Selected Format file
+        wav_file = None  # audio file for the player (streamlit won't play a midi file)
         files = []
         for image in images:
             files.append(('images', (image.name, image.getvalue(), image.type)))
 
         data = {'format': format}
         
-        response = requests.post("http://localhost:8000/test_generate", files=files, data=data) # TODO: replace placeholder with  proper api url
+        response = fetch_files(files, data)
         
         print(f"Response status: {response.status_code}")
         
@@ -71,7 +91,7 @@ def body():
             loaded = False
             
             for idx, file_dict in enumerate(response_files):
-                st.markdown(f"### Files for Uploaded Image #{idx + 1}:")
+                # st.markdown(f"### Files for Uploaded Image #{idx + 1}:")
                 usf_file = None # User Selected Format file
                 wav_file = None  # audio file for the player (streamlit won't play a midi file)
                 
@@ -97,13 +117,25 @@ def body():
                             
                 print("🌼🌼 wav_file 🌼🌼", wav_file)
                 print("🌼🌼 usf_file 🌼🌼", usf_file)
-                st.audio(wav_file[1], format=f"audio/{wav_file[0]}", start_time=0)
-                st.download_button(
-                    label=f"Download {usf_file[0].upper()} File",
-                    data=usf_file[2],
-                    file_name=usf_file[1].split('/')[-1],
-                    mime=f"audio/{usf_file[0]}"
-                )
+                if usf_file:
+                    download_link = create_download_link(usf_file)
+                    # st.markdown(download_link, unsafe_allow_html=True)
+                    st.markdown(
+                        f"""
+                            <div class="header-download">
+                                <h3>Files for Uploaded Image #{idx + 1}:</h3>
+                                {download_link}
+                            </div>
+                        """, unsafe_allow_html=True)
+                if wav_file:
+                    st.audio(wav_file[1], format=f"audio/{wav_file[0]}", start_time=0)
+                    
+                    # download_button = st.download_button(
+                    #     label=f"Download {usf_file[0].upper()} File",
+                    #     data=usf_file[2],
+                    #     file_name=usf_file[1].split('/')[-1],
+                    #     mime=f"audio/{usf_file[0]}"
+                    # )
         else:
             st.error(f"Failed to generate {format.upper()} file.")
 
