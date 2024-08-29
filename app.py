@@ -1,10 +1,10 @@
-import io
 import requests
 import streamlit as st
 from datetime import datetime
-# from pydub import AudioSegment 
-from midi2audio import FluidSynth  # Required for MIDI to WAV conversion
-import tempfile
+
+# import base64
+# from io import BytesIO
+# from PIL import Image
 
 # Imports
 with open('style.css') as f:
@@ -12,7 +12,8 @@ with open('style.css') as f:
 
 st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
-apiUrl = "http://127.0.0.1:8000/test?media_type=midi"
+# apiUrl = "http://127.0.0.1:8000/test?media_type=midi"
+apiUrl = "http://127.0.0.1:8000/test_generate"
 
 # Navbar with a refresh button
 def navbar():
@@ -34,60 +35,75 @@ def header():
 
 # Body with a form and file display
 def body():
-    music_file = None
+    # usf_file = None # User Selected Format file
+    # wav_file = None  # audio file for the player (streamlit won't play a midi file)
 
     with st.form(key="my_form"):
         format = st.selectbox("Select a file format", ["midi", "wav", "mp3"], help="Choose a file format")
-        image = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"], help="Choose an image file")
-        option = st.selectbox("Select a key", ["C", "D", "E"], help="Choose a key")
-        value = st.slider("Choose a tempo", 0, 200, 120, help="Select a tempo between 0 and 200")
+        # images = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"], help="Choose an image file")
+        images = st.file_uploader("Upload images", type=["jpg", "png", "jpeg"], accept_multiple_files=True, help="Choose image files")
+        # option = st.selectbox("Select a key", ["C", "D", "E"], help="Choose a key")
+        # value = st.slider("Choose a tempo", 0, 200, 120, help="Select a tempo between 0 and 200")
         submit_button = st.form_submit_button(label="Submit")
-    
-    if submit_button and image is not None:
-        # Send the file and other data to the FastAPI backend
-        files = {'image': image.getvalue()}
-        data = {'format': format, 'key': option, 'tempo': value}
-        response1 = requests.post("http://localhost:8000/generate", files=files, data=data) # TODO: replace placeholder with  proper api url
-        response = requests.get(apiUrl) # TODO: replace placeholder with  proper api url
         
-        # print(f"Response1 status: {response1.status_code}")
-        # print(response1)
-        # print(f"Response1 content: {response1.content}")
-        # print("\n")
-        # print(f"Response status: {response.status_code}")
-        # print(response)
-        # print(f"Response content: {response.content}")
+        # # If we watend to submit btn aligned right 
+        # button_container = st.container()
+        # with button_container:
+        #     submit_button = st.form_submit_button(label="Submit")
+    
+    if submit_button and images is not None:
+        files = []
+        for image in images:
+            files.append(('images', (image.name, image.getvalue(), image.type)))
 
+        data = {'format': format}
+        
+        response = requests.post("http://localhost:8000/test_generate", files=files, data=data) # TODO: replace placeholder with  proper api url
+        
+        print(f"Response status: {response.status_code}")
         
         if response.status_code == 200:
-            # music_file = response.json().get(format)
-            music_file = response.content
+            # st.markdown("### RESPONSE 200")
             
-            if format == "midi":
-                # Convert MIDI to WAV for playback using midi2audio
-                with tempfile.NamedTemporaryFile(suffix=".mid") as midi_tempfile:
-                    midi_tempfile.write(music_file)
-                    midi_tempfile.flush()
-
-                    fs = FluidSynth()
-                    with tempfile.NamedTemporaryFile(suffix=".wav") as wav_tempfile:
-                        fs.midi_to_audio(midi_tempfile.name, wav_tempfile.name)
+            response_files = response.json()  # Get the JSON response from FastAPI
+            print("🌼🌼 response_files >>>>>\n")
+            print(response_files)
+            loaded = False
+            
+            for idx, file_dict in enumerate(response_files):
+                st.markdown(f"### Files for Uploaded Image #{idx + 1}:")
+                usf_file = None # User Selected Format file
+                wav_file = None  # audio file for the player (streamlit won't play a midi file)
+                
+                for file_type, file_url in file_dict.items():
+                    print("🌼🌼 file_dict 🌼🌼", file_dict)
+                    print("🌼🌼 file_type 🌼🌼", file_type)
+                    print("🌼🌼 file_url 🌼🌼", file_url)
+                    
+                    if file_url:
+                        # Fetch the actual content of the file
+                        file_content = requests.get(file_url).content
                         
-                        # Play the WAV file
-                        st.markdown("### File Output")
-                        st.audio(wav_tempfile.read(), format="audio/wav", start_time=0)
-
-            else:
-                st.markdown("### File Output")
-                st.audio(music_file, format=f"audio/{format}", start_time=0)
-
-            
-            st.download_button(
-                label=f"Download {format.upper()} File",
-                data=music_file,
-                file_name=f"your_music_file.{ 'mid' if format == 'midi' else format }",
-                mime=f"audio/{format}"
-            )
+                        if file_type == format:
+                            print("🎧🎧 usf_file (file_type == format) 🎧🎧")
+                            usf_file = (file_type, file_url, file_content)
+                            
+                        if file_type == 'wav':
+                            print("🎧🎧 wav_file (file_type == 'wav') 🎧🎧")
+                            wav_file = (file_type, file_url)
+                        
+                    else:
+                        st.error(f"Failed to generate {format.upper()} file.")
+                            
+                print("🌼🌼 wav_file 🌼🌼", wav_file)
+                print("🌼🌼 usf_file 🌼🌼", usf_file)
+                st.audio(wav_file[1], format=f"audio/{wav_file[0]}", start_time=0)
+                st.download_button(
+                    label=f"Download {usf_file[0].upper()} File",
+                    data=usf_file[2],
+                    file_name=usf_file[1].split('/')[-1],
+                    mime=f"audio/{usf_file[0]}"
+                )
         else:
             st.error(f"Failed to generate {format.upper()} file.")
 
@@ -112,43 +128,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    # # Hide the Streamlit viewer badge
-    # st.markdown(
-    #     """
-    #     <script>
-    #     document.addEventListener('DOMContentLoaded', function() {
-    #         const badge = document.querySelector('.viewerBadge_container__r5tak');
-    #         if (badge) {
-    #             badge.style.display = 'none';
-    #         }
-    #     });
-    #     </script>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
-    
-    # # Hide the Streamlit viewer badge
-    # st.markdown(
-    #     """
-    #     <script type="text/javascript">
-    #     console.log("SIEMA!")
-    #     const hideBadge = () => {
-    #         const badge = document.querySelector('.viewerBadge_container__r5tak');
-    #         console.log("YELLOW badge",badge)
-    #         if (badge) {
-    #             badge.style.display = 'none';
-    #         }
-    #     };
-
-    #     const observer = new MutationObserver(hideBadge);
-    #     observer.observe(document.body, { childList: true, subtree: true });
-
-    #     hideBadge();  // Initial check in case the badge is already present
-    #     </script>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
     
     # Hide the Streamlit viewer badge
     st.markdown(
