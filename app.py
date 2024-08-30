@@ -188,3 +188,6 @@ if __name__ == "__main__":
         """,
         unsafe_allow_html=True
     )
+    
+    
+    st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
