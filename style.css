@@ -4,6 +4,10 @@ header, .viewerBadge_container__r5tak, .viewerBadge_link__qRIco, .viewerBadge_te
     display: none !important;
 }
 
+.viewerBadge_container__r5tak {
+    display: none !important;
+}
+
 /* body {
     background: linear-gradient(90deg, #00f, #ff0, #f00);
     background-size: 200% 100%;
