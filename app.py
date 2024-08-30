@@ -57,11 +57,14 @@ def body():
     # wav_file = None  # audio file for the player (streamlit won't play a midi file)
 
     with st.form(key="my_form"):
+        keys = ["C Major","G Major","D Major","A Major","F Major","Bb Major","Eb Major","A Minor","E Minor","B Minor","D Minor","G Minor"]        
+        # default_key = "C Major"
         format = st.selectbox("Select a file format", ["midi", "wav", "mp3"], help="Choose a file format")
         # images = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"], help="Choose an image file")
+        key = st.selectbox("Select a key signature", keys, help="Choose a key")
+        tempo = st.slider("Choose a tempo", 5, 300, 120, help="Select a tempo between 5 and 200")
         images = st.file_uploader("Upload images", type=["jpg", "png", "jpeg"], accept_multiple_files=True, help="Choose image files")
-        # option = st.selectbox("Select a key", ["C", "D", "E"], help="Choose a key")
-        # value = st.slider("Choose a tempo", 0, 200, 120, help="Select a tempo between 0 and 200")
+        
         submit_button = st.form_submit_button(label="CONVERT", type="primary")
         
         # # If we watend to submit btn aligned right 
